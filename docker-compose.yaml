@@ -1,0 +1,51 @@
+services:
+  spark-master:
+    image: bitnami/spark:3.3.0
+    container_name: spark-master
+    environment:
+      - SPARK_MODE=master
+      - PYSPARK_PYTHON=/opt/bitnami/python/bin/python3
+      - PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python3
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    networks:
+      - spark-network
+
+  spark-worker-server:
+    image: bitnami/spark:3.3.0
+    container_name: spark-worker-1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - PYSPARK_PYTHON=/opt/bitnami/python/bin/python3
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"
+    networks:
+      - spark-network
+
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Use the existing Dockerfile
+    container_name: jupyter
+    depends_on:
+      - spark-master
+    ports:
+      - "8888:8888"
+    environment:
+      - PYSPARK_PYTHON=/opt/bitnami/python/bin/python3
+      - PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python3
+    command: >
+      start-notebook.sh --NotebookApp.token='' --NotebookApp.password='' --allow-root --ip=0.0.0.0 --port=8888 --no-browser
+    networks:
+      - spark-network
+
+networks:
+  spark-network:
+
