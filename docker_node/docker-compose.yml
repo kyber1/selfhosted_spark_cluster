@@ -1,0 +1,18 @@
+services:
+  spark-worker-3:
+    image: bitnami/spark:3.3.0
+    container_name: spark-worker-laptop
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://192.168.50.70:7077  
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      - PYSPARK_PYTHON=/opt/bitnami/python/bin/python3
+    ports:
+      - "8083:8081"  
+    networks:
+      - spark-network
+
+networks:
+  spark-network:
+    driver: bridge
