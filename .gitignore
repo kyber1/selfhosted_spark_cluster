@@ -1,0 +1,11 @@
+#vim swap
+*.swp
+
+#docker stuff
+.dockerignore
+.docker-compose.override.yml
+**/logs/
+**/volumes/
+**/.env
+.env
+
